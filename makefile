@@ -6,6 +6,59 @@ run:
 	go run api/services/sales/main.go | go run api/tooling/logfmt/main.go
 
 # ==============================================================================
+# Define dependencies
+
+GOLANG          := golang:1.23
+ALPINE          := alpine:3.21
+KIND            := kindest/node:v1.32.0
+POSTGRES        := postgres:17.2
+GRAFANA         := grafana/grafana:11.4.0
+PROMETHEUS      := prom/prometheus:v3.0.0
+TEMPO           := grafana/tempo:2.6.0
+LOKI            := grafana/loki:3.3.0
+PROMTAIL        := grafana/promtail:3.3.0
+
+KIND_CLUSTER    := ardan-starter-cluster
+NAMESPACE       := sales-system
+SALES_APP       := sales
+AUTH_APP        := auth
+BASE_IMAGE_NAME := localhost/ardanlabs
+VERSION         := 0.0.1
+SALES_IMAGE     := $(BASE_IMAGE_NAME)/$(SALES_APP):$(VERSION)
+METRICS_IMAGE   := $(BASE_IMAGE_NAME)/metrics:$(VERSION)
+AUTH_IMAGE      := $(BASE_IMAGE_NAME)/$(AUTH_APP):$(VERSION)
+
+# ==============================================================================
+# Install dependencies
+
+dev-gotooling:
+	go install github.com/divan/expvarmon@latest
+	go install github.com/rakyll/hey@latest
+	go install honnef.co/go/tools/cmd/staticcheck@latest
+	go install golang.org/x/vuln/cmd/govulncheck@latest
+	go install golang.org/x/tools/cmd/goimports@latest
+
+dev-brew:
+	brew update
+	brew list kind || brew install kind
+	brew list kubectl || brew install kubectl
+	brew list kustomize || brew install kustomize
+	brew list pgcli || brew install pgcli
+	brew list watch || brew install watch
+
+dev-docker:
+	docker pull $(GOLANG) & \
+	docker pull $(ALPINE) & \
+	docker pull $(KIND) & \
+	docker pull $(POSTGRES) & \
+	docker pull $(GRAFANA) & \
+	docker pull $(PROMETHEUS) & \
+	docker pull $(TEMPO) & \
+	docker pull $(LOKI) & \
+	docker pull $(PROMTAIL) & \
+	wait;
+
+# ==============================================================================
 # Modules support
 
 tidy:
