@@ -3,6 +3,8 @@ package web
 import (
 	"context"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 type Encoder interface {
@@ -28,10 +30,9 @@ func (a *App) HandleFunc(pattern string, handler HandlerFunc, mw ...MidFunc) {
 	handler = wrapMiddleware(a.mw, handler)
 
 	h := func(w http.ResponseWriter, r *http.Request) {
+		ctx := setTraceID(r.Context(), uuid.New())
 
-		// I CAN DO ANYTHING HERE
-
-		v := handler(r.Context(), r)
+		v := handler(ctx, r)
 
 		data, typ, err := v.Encode()
 		if err != nil {
