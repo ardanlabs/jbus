@@ -13,15 +13,19 @@ type HandlerFunc func(ctx context.Context, r *http.Request) Encoder
 
 type App struct {
 	*http.ServeMux
+	mw []MidFunc
 }
 
-func NewApp() *App {
+func NewApp(mw ...MidFunc) *App {
 	return &App{
 		ServeMux: http.NewServeMux(),
+		mw:       mw,
 	}
 }
 
-func (app *App) HandleFunc(pattern string, handler HandlerFunc) {
+func (a *App) HandleFunc(pattern string, handler HandlerFunc, mw ...MidFunc) {
+	handler = wrapMiddleware(mw, handler)
+	handler = wrapMiddleware(a.mw, handler)
 
 	h := func(w http.ResponseWriter, r *http.Request) {
 
@@ -42,5 +46,5 @@ func (app *App) HandleFunc(pattern string, handler HandlerFunc) {
 		// I CAN DO ANYTHING HERE
 	}
 
-	app.ServeMux.HandleFunc(pattern, h)
+	a.ServeMux.HandleFunc(pattern, h)
 }
