@@ -1,22 +1,16 @@
 package testapp
 
 import (
-	"encoding/json"
+	"context"
 	"net/http"
+
+	"github.com/ardanlabs/service/foundation/web"
 )
 
-func test(w http.ResponseWriter, r *http.Request) {
-	// Unmarshal Input Data
-	// Validate Data
-	// Business Layer
-	// Error: return error
-	// Success: Form data reponse
-
-	status := struct {
-		Status string
-	}{
+func test(ctx context.Context, r *http.Request) web.Encoder {
+	s := status{
 		Status: "OK",
 	}
 
-	json.NewEncoder(w).Encode(status)
+	return s
 }
