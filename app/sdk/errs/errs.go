@@ -96,6 +96,12 @@ func (e *Error) Error() string {
 	return e.Message
 }
 
+// HTTPStatus implements the web package httpStatus interface so the
+// web framework can use the correct http status.
+func (e *Error) HTTPStatus() int {
+	return httpStatus[e.Code]
+}
+
 // Encode implements the encoder interface.
 func (e *Error) Encode() ([]byte, string, error) {
 	data, err := json.Marshal(e)

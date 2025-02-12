@@ -13,12 +13,15 @@ type Encoder interface {
 
 type HandlerFunc func(ctx context.Context, r *http.Request) Encoder
 
+type Logger func(ctx context.Context, msg string, args ...any)
+
 type App struct {
+	log Logger
 	*http.ServeMux
 	mw []MidFunc
 }
 
-func NewApp(mw ...MidFunc) *App {
+func NewApp(log Logger, mw ...MidFunc) *App {
 	return &App{
 		ServeMux: http.NewServeMux(),
 		mw:       mw,
@@ -32,19 +35,12 @@ func (a *App) HandleFunc(pattern string, handler HandlerFunc, mw ...MidFunc) {
 	h := func(w http.ResponseWriter, r *http.Request) {
 		ctx := setTraceID(r.Context(), uuid.New())
 
-		v := handler(ctx, r)
+		resp := handler(ctx, r)
 
-		data, typ, err := v.Encode()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+		if err := Respond(ctx, w, resp); err != nil {
+			a.log(ctx, "web-respond", "ERROR", err)
 			return
 		}
-
-		w.Header().Set("Content-Type", typ)
-		w.WriteHeader(http.StatusOK)
-		w.Write(data)
-
-		// I CAN DO ANYTHING HERE
 	}
 
 	a.ServeMux.HandleFunc(pattern, h)
