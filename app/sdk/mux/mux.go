@@ -8,7 +8,7 @@ import (
 )
 
 func WebAPI(log *logger.Logger) *web.App {
-	app := web.NewApp(mid.Logger(log))
+	app := web.NewApp(mid.Logger(log), mid.Error(log))
 
 	testapp.Routes(app)
 

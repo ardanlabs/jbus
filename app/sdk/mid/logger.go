@@ -22,12 +22,12 @@ func Logger(log *logger.Logger) web.MidFunc {
 
 			log.Info(ctx, "request started", "method", r.Method, "path", path, "remoteaddr", r.RemoteAddr)
 
-			enc := handler(ctx, r)
+			resp := handler(ctx, r)
 
 			log.Info(ctx, "request completed", "method", r.Method, "path", path, "remoteaddr", r.RemoteAddr,
 				"since", time.Since(now).String())
 
-			return enc
+			return resp
 		}
 
 		return h
