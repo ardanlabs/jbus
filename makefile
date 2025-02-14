@@ -155,3 +155,9 @@ metrics-view:
 
 statsviz:
 	open http://localhost:3010/debug/statsviz
+
+# ==============================================================================
+# Administration
+
+pgcli:
+	pgcli postgresql://postgres:postgres@localhost
