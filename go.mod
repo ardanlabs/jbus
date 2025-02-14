@@ -4,6 +4,7 @@ go 1.23.1
 
 require (
 	github.com/ardanlabs/conf/v3 v3.4.0
+	github.com/ardanlabs/darwin/v3 v3.3.1
 	github.com/arl/statsviz v0.6.0
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.2
