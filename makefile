@@ -11,6 +11,9 @@ help:
 curl:
 	curl -i -X GET http://localhost:3000/test
 
+users:
+	curl -i "http://localhost:3000/users?page=1&rows=2"
+
 # ==============================================================================
 # Define dependencies
 

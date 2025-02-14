@@ -112,3 +112,48 @@ func (e *Error) Encode() ([]byte, string, error) {
 func (e *Error) Equal(e2 *Error) bool {
 	return e.Code == e2.Code && e.Message == e2.Message
 }
+
+// =============================================================================
+
+// FieldError is used to indicate an error with a specific request field.
+type FieldError struct {
+	Field string `json:"field"`
+	Err   string `json:"error"`
+}
+
+// FieldErrors represents a collection of field errors.
+type FieldErrors []FieldError
+
+// NewFieldErrors creates a field errors.
+func NewFieldErrors(field string, err error) *Error {
+	fe := FieldErrors{
+		{
+			Field: field,
+			Err:   err.Error(),
+		},
+	}
+
+	return fe.ToError()
+}
+
+// Add adds a field error to the collection.
+func (fe *FieldErrors) Add(field string, err error) {
+	*fe = append(*fe, FieldError{
+		Field: field,
+		Err:   err.Error(),
+	})
+}
+
+// ToError converts the field errors to an Error.
+func (fe FieldErrors) ToError() *Error {
+	return New(InvalidArgument, fe)
+}
+
+// Error implements the error interface.
+func (fe FieldErrors) Error() string {
+	d, err := json.Marshal(fe)
+	if err != nil {
+		return err.Error()
+	}
+	return string(d)
+}
